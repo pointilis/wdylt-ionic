@@ -35,3 +35,30 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+/** TailwindCSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CKEDITOR */
+@import 'ckeditor5/ckeditor5-editor.css';
+@import 'ckeditor5/ckeditor5-content.css';
+
+@layer base {
+  ul, ol {
+    list-style: revert;
+    margin: revert;
+    padding: revert;
+  }
+}
+
+body {
+  padding-top: var(--safe-area-inset-top);
+}
+
+ion-label {
+  p {
+    font-size: inherit !important;
+  }
+}

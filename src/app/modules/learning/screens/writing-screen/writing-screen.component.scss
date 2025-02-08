@@ -1,0 +1,44 @@
+::ng-deep {
+    .ck-sticky-panel__content {
+        border-width: 0 0 0 0 !important;
+    }
+
+    .ck-content {
+        border-width: 0 0 0 0 !important;
+        --webkit-box-shadow: none !important;
+        box-shadow: none !important;
+    }
+
+    .ck-editor__editable {
+        min-height: 100%;
+    }
+
+    .ck-balloon-panel {
+        display: none !important;
+    }
+
+    .ck.ck-editor {
+        display: flex;
+        flex-direction: column-reverse;
+        height: 100%;
+    }
+
+    .ck.ck-dropdown .ck-dropdown__panel.ck-dropdown__panel_s, 
+    .ck.ck-dropdown .ck-dropdown__panel.ck-dropdown__panel_se, 
+    .ck.ck-dropdown .ck-dropdown__panel.ck-dropdown__panel_sme, 
+    .ck.ck-dropdown .ck-dropdown__panel.ck-dropdown__panel_smw, 
+    .ck.ck-dropdown .ck-dropdown__panel.ck-dropdown__panel_sw {
+        bottom: 125% !important;
+        top: auto !important;
+    }
+
+    .ck-reset_all :not(.ck-reset_all-excluded *), 
+    .ck.ck-reset_all {
+        margin-top: auto;
+    }
+
+    .ck.ck-editor__main {
+        overflow-y: auto;
+        height: 100%;
+    }
+}

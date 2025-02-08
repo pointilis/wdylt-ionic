@@ -1,0 +1,33 @@
+<ion-header [translucent]="false" class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Recording #3</ion-title>
+
+    <ion-button slot="end" fill="clear" class="ion-margin-end">
+      <ion-icon slot="start" name="checkmark"></ion-icon>
+      <ion-text>Save</ion-text>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="false">
+  <button id="record">Record</button>
+  <button id="pause" style="display: none;">Pause</button>
+
+  <select id="mic-select">
+    <option value="" hidden>Select mic</option>
+  </select>
+
+  <label><input type="checkbox" id="scrollingWaveform" /> Scrolling waveform</label>
+
+  <label><input type="checkbox" id="continuousWaveform" checked="checked" /> Continuous waveform</label>
+
+  <p id="progress">00:00</p>
+
+  <div id="mic" style="border: 1px solid #ddd; border-radius: 4px; margin-top: 1rem"></div>
+
+  <div id="recordings" style="margin: 1rem 0"></div>
+</ion-content>

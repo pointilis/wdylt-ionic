@@ -1,0 +1,32 @@
+<ion-item 
+    class="ion-no-padding" 
+    mode="ios" 
+    [ngStyle]="{'--inner-padding-end': 0}" 
+    [lines]="last ? 'none' : 'full'"
+  >
+  <ion-label class="!mr-0">
+    <div class="flex items-center mb-2">
+      <ion-icon name="time-outline" class="mr-1"></ion-icon>
+      <ion-text class="ion-margin-end text-neutral-500">{{ post.post_date_gmt | date: 'hh:mm' }}</ion-text>
+    
+      <ion-button color="danger" fill="clear" (click)="onDeleteHandler(post.ID)">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        <ion-text>Delete</ion-text>
+      </ion-button>
+    </div>
+
+    <div class="flex w-full flex-col items-center" (click)="onPlay()">
+      <div class="flex items-center w-full bg-neutral-100 rounded-full pr-4 pl-1 py-2">
+        <div class="flex-none w-30 h-30">
+          <ion-buttons slot="start">
+            <ion-button size="large">
+              <ion-icon slot="icon-only" name="play-circle-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </div>
+
+        <div class="text-neutral-500 text-sm w-52">{{ durationInMinutes }} minutes</div>
+      </div>
+    </div>
+  </ion-label>
+</ion-item>

@@ -1,0 +1,72 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="false" [scrollY]="false">
+  <div class="h-full w-full flex items-center justify-center pb-20 relative">
+    <div class="text-center">
+      <div class="block ion-margin-bottom text-4xl">
+        <cd-timer [format]="'ms'" [autoStart]="false" (onTick)="onTimerTick($event)">00:00</cd-timer>
+      </div>
+
+      <ion-text class="block text-xl ion-margin-bottom">
+        {{ isRecording() ? (isPaused() ? 'Paused... stop speak' : 'Recording... speak now') : 'Are you ready to record a voice?' }}
+      </ion-text>
+
+      <div class="w-52 mx-auto">
+        @if (isRecording()) {
+          <ion-button 
+            (click)="changeProgress()" 
+            size="large" 
+            expand="block"
+            shape="round" 
+            [color]="isPaused() ? 'secondary': 'warning'" 
+            [ngStyle]="{'--padding-start': '30px', '--padding-end': '30px'}"
+          >
+          @if (isPaused()) {
+            <ion-icon name="mic-outline" slot="start"></ion-icon>
+            <ion-text>Continue</ion-text>
+          } @else {
+            <ion-icon name="mic-off-outline" slot="start"></ion-icon>
+            <ion-text>Pause</ion-text>
+          }
+          </ion-button>
+        } @else {
+          <ion-button 
+            (click)="startRecording()" 
+            size="large" 
+            expand="block"
+            shape="round" 
+            color="secondary" 
+            [ngStyle]="{'--padding-start': '30px', '--padding-end': '30px'}"
+          >
+            <ion-icon name="mic-outline" slot="start"></ion-icon>
+            <ion-text>Start</ion-text>
+          </ion-button>
+        }
+
+        <ion-button 
+          (click)="stopRecording()" 
+          size="large" 
+          expand="block"
+          shape="round" 
+          color="success" 
+          class="ion-margin-top"
+          [ngStyle]="{'--padding-start': '30px', '--padding-end': '30px'}"
+          [disabled]="!isRecording()"
+        >
+          <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+          <ion-text>Finish</ion-text>
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ion-padding absolute bottom-10 left-10 right-10 top-auto">
+    <ion-progress-bar [buffer]="amplitude() + 0.1" [value]="amplitude()"></ion-progress-bar>
+  </div>
+</ion-content>

@@ -1,0 +1,26 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>{{ pid ? 'Edit' : 'What you learn?' }}</ion-title>
+
+    <ion-button 
+      size="small" 
+      slot="end" 
+      fill="solid" 
+      color="secondary" 
+      shape="round" 
+      (click)="doneHandler()" 
+      class="ion-margin-end"
+    >
+      <ion-icon slot="start" name="checkmark"></ion-icon>
+      <ion-text>Done</ion-text>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="false" [scrollY]="false">
+  <app-writing-editor (content)="getContentHandler($event)" [headerHeight]="headerElementHeight"></app-writing-editor>
+</ion-content>

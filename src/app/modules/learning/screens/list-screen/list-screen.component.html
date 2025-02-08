@@ -1,0 +1,82 @@
+<!-- <ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>What Did You Learn Today?</ion-title>
+  </ion-toolbar>
+</ion-header> -->
+
+<ion-content>
+  <div class="bg-[#2196F3] pb-4">
+    <div class="ion-padding flex">
+      <div class="block text-white">
+        <ion-text class="block w-full text-5xl font-bold">What</ion-text>
+        <ion-text class="block w-full text-3xl font-semibold">Did You</ion-text>
+        <ion-text class="block w-full text-3xl font-semibold">Learn Today</ion-text>
+      </div>
+
+      <div class="ml-auto">
+        <div class="flex flex-col">
+          <ion-img src="assets/icon/icon.png" class="w-28"></ion-img>
+        </div>
+      </div>
+    </div>
+    
+    <div class="px-2">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <ion-button [ngStyle]="{'--padding-top': '20px', '--padding-bottom': '20px'}" expand="block" shape="round" strong="true" color="secondary" [routerLink]="['/record']">
+              <ion-icon slot="start" name="mic-outline"></ion-icon>
+              <ion-text>Record</ion-text>
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-button [ngStyle]="{'--padding-top': '20px', '--padding-bottom': '20px'}" expand="block" shape="round" strong="true" color="warning" [routerLink]="['/write']">
+              <ion-icon slot="start" name="clipboard-outline"></ion-icon>
+              <ion-text>Write</ion-text>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+
+  <div class="border-t-2 border-neutral-200"></div>
+
+  <div class="ion-padding">
+    <div class="flex items-center ion-margin-bottom">
+      <div class="text-lg font-semibold">
+        <ion-text>{{ selectedDate | date: 'longDate' }}</ion-text>
+      </div>
+
+      <div class="ml-auto">
+        <div>
+          <ion-button shape="round" fill="clear" color="dark" id="open-filter-modal">
+            <ion-icon slot="start" name="calendar-outline"></ion-icon>
+            <ion-text>Calendar</ion-text>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <app-post-list></app-post-list>
+  </div>
+</ion-content>
+
+<ion-modal #filterModal trigger="open-filter-modal">
+  <ng-template>
+    <ion-datetime [value]="selectedDate" presentation="date" size="cover" (ionChange)="onDateChange($event)"></ion-datetime>
+
+    <!-- <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-button fill="clear" color="danger" expand="block" (click)="onCancel()">Cancel</ion-button>
+        </ion-col>
+
+        <ion-col size="6">
+          <ion-button fill="clear" color="primary" expand="block" (click)="onConfirm()">Confirm</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid> -->
+  </ng-template>
+</ion-modal>

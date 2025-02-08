@@ -1,0 +1,8 @@
+<ckeditor
+  *ngIf="( Editor && config )"
+  [editor]="Editor"
+  [config]="config"
+  (change)="editorChangeHandler($event)"
+  (ready)="editorReadyHandler($event)"
+>
+</ckeditor>

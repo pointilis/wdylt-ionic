@@ -1,0 +1,86 @@
+<ng-container *ngIf="posts$ | async as posts">
+  @if (posts.status === 'success') {
+    @if (posts.data.length > 0) {
+      <ng-container *ngFor="let post of posts.data; let last=last">
+        @if (post.post_mime_type == 'audio/mpeg') {
+          <app-post-item-audio [post]="post" [last]="last" (onDelete)="onDeleteHandler($event)" (player)="getPlayer($event)"></app-post-item-audio>
+        } @else {
+          <ion-item 
+            class="ion-no-padding" 
+            mode="ios" 
+            [ngStyle]="{'--inner-padding-end': 0}" 
+            [lines]="last ? 'none' : 'full'"
+          >
+            <ion-label class="!mr-0">
+              <div class="flex items-center mb-2">
+                <ion-icon name="time-outline" class="mr-1"></ion-icon>
+                <ion-text class="ion-margin-end text-neutral-500">{{ post.post_date_gmt | date: 'hh:mm' }}</ion-text>
+
+                <!-- <ion-button color="primary" fill="clear">
+                  <ion-icon name="sparkles-outline" slot="start"></ion-icon>
+                  <ion-text>Get AI Insight</ion-text>
+                </ion-button> -->
+
+                <ion-button color="danger" fill="clear" (click)="onDeleteHandler(post.ID)">
+                  <ion-icon name="trash-outline" slot="start"></ion-icon>
+                  <ion-text>Delete</ion-text>
+                </ion-button>
+
+                <ion-button color="primary" fill="clear" [routerLink]="['/write', post.ID]">
+                  <ion-icon name="create-outline" slot="start"></ion-icon>
+                  <ion-text>Edit</ion-text>
+                </ion-button>
+              </div>
+              
+              <div class="block text-lg ck-content" [innerHTML]="presentHTMLContent(post?.post_content)"></div>
+            </ion-label>
+          </ion-item>
+        }
+      </ng-container>
+    } @else { 
+      <div class="ion-padding text-center">
+        <ion-text>This day is empty, maybe you forgot to write or record.</ion-text>
+      </div>
+    }
+  }
+</ng-container>
+
+<ion-modal 
+  #playModal
+  (didPresent)="onDidPresent($event)" 
+  (didDismiss)="onDidDismiss()" 
+  [backdropDismiss]="false"
+  [initialBreakpoint]="0.75"
+  [breakpoints]="[0, 0.75]"
+  mode="ios"
+>
+  <ng-template>
+    <div class="ion-padding">
+      <div class="flex w-full flex-col items-center ion-margin-top">
+        <div class="flex items-center w-full bg-neutral-100 rounded-full pr-4 pl-1 py-2">
+          <div class="flex-none w-30 h-30">
+            <ion-buttons slot="start">
+              <ion-button size="large" (click)="dismiss()">
+                <ion-icon slot="icon-only" [name]="isPlay() ? 'stop-circle-outline' : 'play-circle-outline'"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </div>
+
+          <div class="text-neutral-500 text-sm w-52">
+            <cd-timer #cdTimer [autoStart]="false" format="ms" [endTime]="duration" (onTick)="onTimerTick($event)" (onComplete)="onTimerComplete()">00:00</cd-timer> / {{ durationInMinutes }} min
+          </div>
+
+          <div class="w-full pl-4">
+            <ion-progress-bar [value]="position"></ion-progress-bar>
+          </div>
+        </div>
+
+        <div class="block ion-text-center ion-padding-top">
+          <div class="w-32 mx-auto">
+            <ion-button (click)="dismiss()" shape="round" expand="block">Stop</ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
