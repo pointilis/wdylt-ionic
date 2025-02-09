@@ -25,7 +25,9 @@ export class PostItemAudioComponent  implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit() { }
+
+  ngOnChanges() {
     this.duration = this.post.meta?.duration ? this.post.meta.duration : 0;
     this.durationInMinutes = (this.duration / 60).toFixed(1);
   }

@@ -175,7 +175,7 @@ export class RecordScreenComponent  implements OnInit {
   }
 
   onTimerTick(event: any) {
-    this._duration = event.seconds;
+    this._duration = event.tick_count;
     console.log('timer tick', this._duration);
   }
 
