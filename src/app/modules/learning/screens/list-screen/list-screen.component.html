@@ -43,19 +43,17 @@
 
   <div class="border-t-2 border-neutral-200"></div>
 
-  <div class="ion-padding">
+  <div class="ion-padding pr-0">
     <div class="flex items-center ion-margin-bottom">
       <div class="text-lg font-semibold">
         <ion-text>{{ selectedDate | date: 'longDate' }}</ion-text>
       </div>
 
       <div class="ml-auto">
-        <div>
-          <ion-button shape="round" fill="clear" color="dark" id="open-filter-modal">
-            <ion-icon slot="start" name="calendar-outline"></ion-icon>
-            <ion-text>Calendar</ion-text>
-          </ion-button>
-        </div>
+        <ion-button shape="round" fill="clear" color="secondary" id="open-filter-modal" mode="ios">
+          <ion-icon slot="start" name="calendar-outline"></ion-icon>
+          <ion-text>Calendar</ion-text>
+        </ion-button>
       </div>
     </div>
 

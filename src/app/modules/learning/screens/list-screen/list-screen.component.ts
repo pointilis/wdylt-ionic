@@ -25,17 +25,14 @@ export class ListScreenComponent  implements OnInit {
   @ViewChild('filterModal') filterModal!: IonModal;
 
   private _timezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  private _dateFormater: string = 'yyyy-MM-dd hh:mm:ss';
   private _filter!: PostFilter;
   public selectedDate!: string;
 
   constructor() { }
 
-  ngOnInit() {
-    
-  }
+  ngOnInit() { }
 
-  ionViewDidEnter() {
+  ngAfterViewInit() {
     // put default value such as `post_date`
     const gmtDate = new TZDate(new Date(), this._timezone);
     this.selectedDate = format(gmtDate, 'yyyy-MM-dd');

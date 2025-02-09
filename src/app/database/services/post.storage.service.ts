@@ -41,7 +41,17 @@ export class PostStorageService {
     this._dbVerService.set(this._databaseName, this._loadToVersion);
   }
 
+  // current database state
+  postState() {
+    return this._isPostReady.asObservable();
+  }
+
   async fetchPosts(filter?: PostFilter) {
+    if (!this._db) {
+      await this.initializeDatabase('posts');
+    }
+
+    // start query
     let sql = `SELECT * FROM posts AS p`;
     
     // filter date

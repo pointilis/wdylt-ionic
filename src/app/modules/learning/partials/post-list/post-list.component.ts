@@ -83,9 +83,7 @@ export class PostListComponent  implements OnInit {
     await alrt.present();
   }
 
-  ngOnInit() {
-    
-  }
+  ngOnInit() { }
 
   getPosts(filter: PostFilter) {
     this.filter = {
@@ -143,8 +141,6 @@ export class PostListComponent  implements OnInit {
     this._mediaObject.stop();
     this._mediaObject.release();
 
-    this.cdTimer.stop();
-    this.cdTimer.reset();
     this.isPlay.set(false);
 
     this.position = 0;

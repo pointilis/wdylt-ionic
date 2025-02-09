@@ -61,7 +61,7 @@ export class PostService {
   /**
    * Get posts
    */
-  public getPosts(filter?: PostFilter): Observable<any[] | void> {
+  public getPosts(filter?: PostFilter): Observable<any[]> {
     const results = this._postStorageService.fetchPosts(filter);
     return from(results);
   }
