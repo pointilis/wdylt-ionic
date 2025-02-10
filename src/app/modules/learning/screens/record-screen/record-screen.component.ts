@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule } from '@ionic/angular';
 import { Media as NGXMedia, MediaObject } from "@awesome-cordova-plugins/media/ngx";
 import { UTCDate } from '@date-fns/utc';
 import { TZDate } from '@date-fns/tz';
@@ -14,7 +14,6 @@ import { CdTimerComponent, CdTimerModule } from 'angular-cd-timer';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { Capacitor } from '@capacitor/core';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
-import { reject } from 'lodash';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -63,6 +62,8 @@ export class RecordScreenComponent  implements OnInit {
   private _fileName!: string;
   private _amplitudeTimer!: any;
   private _duration: number = 0;
+  private _postStatus: string = 'draft';
+  private _action: string = 'recording';
   
   public pid!: string;
   public currentPost!: any;
@@ -75,6 +76,7 @@ export class RecordScreenComponent  implements OnInit {
     private _file: File,
     private _androidPermissions: AndroidPermissions,
     private _route: ActivatedRoute,
+    private _alertCtrl: AlertController,
   ) { 
     this._actionsSubject$.pipe(takeUntilDestroyed()).subscribe((action: any) => {
       switch (action.type) {
@@ -110,11 +112,10 @@ export class RecordScreenComponent  implements OnInit {
     });
   }
 
-  stopRecording() {
-    this._recorder.stopRecord();
-    this._recorder.release();
-
-    this.savePostHandler('publish');
+  onFinish() {
+    this._postStatus = 'publish';
+    this.savePostHandler(this._postStatus);
+    this._action = 'finish';
   }
 
   /**
@@ -234,6 +235,42 @@ export class RecordScreenComponent  implements OnInit {
       this._recorder.stopRecord();
       this._recorder.release();
     }
+  }
+
+  /**
+   * Guards
+   */
+  async cancelRecording(nextUrl: string): Promise<boolean> {
+    if (this._action != 'finish') {
+      const alrt = await this._alertCtrl.create({
+        backdropDismiss: false,
+        message: 'Do you want to remove this recording?',
+        buttons: [
+          {
+            text: 'Continue Recording',
+            role: 'cancel',
+          },
+          {
+            text: 'Yes Remove!',
+            role: 'confirm',
+          }
+        ]
+      });
+
+      await alrt.present();
+
+      const data = await alrt.onDidDismiss();
+
+      if (data.role == 'confirm') {
+        // delete
+        this._store.dispatch(PostActions.deletePost({ pid: this.pid as any }));
+        return true;
+      }
+
+      return false;
+    }
+
+    return true;
   }
 
 }

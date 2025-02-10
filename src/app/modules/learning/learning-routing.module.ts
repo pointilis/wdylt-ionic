@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { WritingScreenComponent } from './screens/writing-screen/writing-screen.component';
 import { ListScreenComponent } from './screens/list-screen/list-screen.component';
 import { RecordScreenComponent } from './screens/record-screen/record-screen.component';
+import { leaveRecordingGuard } from 'src/app/modules/shared/guards/leave-recording.guard';
 
 const routes: Routes = [
   {
@@ -20,6 +21,7 @@ const routes: Routes = [
   },
   {
     path: 'record',
+    canDeactivate: [leaveRecordingGuard],
     component: RecordScreenComponent,
   },
   {
