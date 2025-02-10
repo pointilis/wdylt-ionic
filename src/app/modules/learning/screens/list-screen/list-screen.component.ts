@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { IonicModule, IonModal } from '@ionic/angular';
+import { Router, RouterModule } from '@angular/router';
+import { AlertController, IonicModule, IonModal } from '@ionic/angular';
 import { PostListComponent } from '../../partials/post-list/post-list.component';
 import { UTCDate } from '@date-fns/utc';
 import { TZDate } from '@date-fns/tz';
@@ -28,7 +28,37 @@ export class ListScreenComponent  implements OnInit {
   private _filter!: PostFilter;
   public selectedDate!: string;
 
-  constructor() { }
+  constructor(
+    private alertCtrl: AlertController,
+    private router: Router,
+  ) { }
+
+  /**
+   * Given note alert
+   */
+  async addNote() {
+    const alrt = await this.alertCtrl.create({
+      inputs: [
+        {
+          type: 'textarea',
+          placeholder: 'Add note, not required',
+          name: 'post_content',
+          cssClass: '!mt-0',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Next',
+          role: 'confirm',
+          handler: (data) => {
+            this.router.navigate(['/record'], { queryParams: { postContent: data.post_content }});
+          }
+        },
+      ]
+    });
+
+    await alrt.present();
+  }
 
   ngOnInit() { }
 

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, signal, ViewChild, ViewEncapsulation, WritableSignal } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { IonicModule } from '@ionic/angular';
 
 @Component({
@@ -10,6 +11,9 @@ import { IonicModule } from '@ionic/angular';
     IonicModule,
     CommonModule,
   ],
+
+  // https://stackoverflow.com/questions/44210786/style-not-working-for-innerhtml-in-angular
+  encapsulation: ViewEncapsulation.None,
 })
 export class PostItemAudioComponent  implements OnInit {
 
@@ -23,11 +27,19 @@ export class PostItemAudioComponent  implements OnInit {
   public durationInMinutes!: string;
   public position: number = 0;
 
-  constructor() { }
+  constructor(
+    private _sanitizer: DomSanitizer,
+  ) { }
 
-  ngOnInit() { }
+  ngOnInit() { 
+    this.setVariableValue();
+  }
 
   ngOnChanges() {
+    this.setVariableValue();
+  }
+
+  setVariableValue() {
     this.duration = this.post.meta?.duration ? this.post.meta.duration : 0;
     this.durationInMinutes = (this.duration / 60).toFixed(1);
   }
@@ -38,6 +50,10 @@ export class PostItemAudioComponent  implements OnInit {
 
   onDeleteHandler(pid: any) {
     this.onDelete.emit(pid);
+  }
+
+  presentHTMLContent(content: any) {
+    return this._sanitizer.bypassSecurityTrustHtml(content);
   }
 
 }

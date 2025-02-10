@@ -28,5 +28,7 @@
         <div class="text-neutral-500 text-sm w-52">{{ durationInMinutes }} minutes</div>
       </div>
     </div>
+
+    <div *ngIf="post?.post_content" class="block text-lg ck-content ion-margin-top" [innerHTML]="presentHTMLContent(post?.post_content)"></div>
   </ion-label>
 </ion-item>

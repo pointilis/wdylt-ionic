@@ -114,8 +114,6 @@ export class PostListComponent  implements OnInit {
   onTimerTick(event: any) {
     const seconds = event.seconds;
     this.position = seconds / this.duration;
-
-    console.log('timer tick', seconds, this.position);
   }
 
   onTimerComplete() {
@@ -125,11 +123,11 @@ export class PostListComponent  implements OnInit {
 
   onDidPresent(event: any) {
     setTimeout(() => {
-      this.cdTimer.start();
-      this.isPlay.set(true);
-
       this._mediaObject = this._media.create(this._file.dataDirectory.replace(/^file:\/\//, '') + this._fileName);
       this._mediaObject.play();
+
+      this.cdTimer.start();
+      this.isPlay.set(true);
     }, 250);
   }
 

@@ -49,6 +49,28 @@ export const PostReducer = createReducer(
   }),
 
   // ...
+  // UPDATE POST
+  // ...
+  on(PostActions.updatePostSuccess, (state, { data }) => {
+    const index = state.lists.data.findIndex(obj => obj.ID == obj.ID);
+
+    return {
+      ...state,
+      lists: {
+        ...state.lists,
+        data: [
+          ...state.lists.data?.slice(0, index),
+          {
+            // update data by index
+            ...data,
+          },
+          ...state.lists.data.slice(1 + index),
+        ]
+      }
+    }
+  }),
+
+  // ...
   // GET POSTS
   // ...
   on(PostActions.getPosts, (state) => {

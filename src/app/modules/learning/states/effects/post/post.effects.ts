@@ -229,7 +229,12 @@ export class PostEffects {
         const postTitle = res.data.post_title;
 
         if (postMimeType == 'audio/mpeg') {
-          this._file.removeFile(this._file.dataDirectory, postTitle);
+          // delete file from device
+          try {
+            this._file.removeFile(this._file.dataDirectory, postTitle);
+          } catch(error) {
+            console.log('delete file error', error);
+          }
         }
       }),
     )

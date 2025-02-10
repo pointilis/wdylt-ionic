@@ -13,6 +13,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CdTimerComponent, CdTimerModule } from 'angular-cd-timer';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { Capacitor } from '@capacitor/core';
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
+import { reject } from 'lodash';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-record-screen',
@@ -26,6 +29,7 @@ import { Capacitor } from '@capacitor/core';
   providers: [
     NGXMedia,
     File,
+    AndroidPermissions,
   ]
 })
 export class RecordScreenComponent  implements OnInit {
@@ -59,14 +63,18 @@ export class RecordScreenComponent  implements OnInit {
   private _fileName!: string;
   private _amplitudeTimer!: any;
   private _duration: number = 0;
+  
   public pid!: string;
   public currentPost!: any;
+  public postContent: string | null = this._route.snapshot.queryParamMap.get('postContent');
 
   constructor(
     private _ngxMedia: NGXMedia,
     private _store: Store<PostState>,
     private _actionsSubject$: ActionsSubject,
     private _file: File,
+    private _androidPermissions: AndroidPermissions,
+    private _route: ActivatedRoute,
   ) { 
     this._actionsSubject$.pipe(takeUntilDestroyed()).subscribe((action: any) => {
       switch (action.type) {
@@ -79,7 +87,23 @@ export class RecordScreenComponent  implements OnInit {
   }
 
   ngOnInit() {
-    
+    const gmtDate = new TZDate(new Date(), this._timezone);
+    this._fileName = `learn_${format(gmtDate, 'yyyyMMdd_hhmmss')}.mp3`;
+  }
+
+  /**
+   * Request permissions
+   */
+  async obtainPermissions() {
+    const audio = await this._androidPermissions.requestPermission(this._androidPermissions.PERMISSION.RECORD_AUDIO);
+    const modifyAudio = await this._androidPermissions.requestPermission(this._androidPermissions.PERMISSION.MODIFY_AUDIO_SETTINGS);
+    const readExtStorage = await this._androidPermissions.requestPermission(this._androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE);
+    const writeExtStorage = await this._androidPermissions.requestPermission(this._androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE);
+
+    const pass = audio.hasPermission && modifyAudio.hasPermission && readExtStorage.hasPermission && writeExtStorage.hasPermission;
+    return new Promise((resolve, reject) => {
+      return resolve(pass);
+    });
   }
 
   stopRecording() {
@@ -101,7 +125,7 @@ export class RecordScreenComponent  implements OnInit {
       return {
         ...value,
         post_title: this._fileName,
-        post_content: this._fileName,
+        post_content: this.postContent ? this.postContent : '',
         post_status: postStatus,
         post_date: format(utcDate, this._dateFormater),
         post_date_gmt: format(gmtDate, this._dateFormater),
@@ -133,7 +157,26 @@ export class RecordScreenComponent  implements OnInit {
     }
   }
 
-  startRecording() {
+  async startRecording() {
+    const pass = await this.obtainPermissions();
+
+    console.log('permissions pas', pass);
+
+    if (pass == false) {
+      this._androidPermissions.requestPermissions([
+        this._androidPermissions.PERMISSION.RECORD_AUDIO,
+        this._androidPermissions.PERMISSION.MODIFY_AUDIO_SETTINGS,
+        this._androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE,
+        this._androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE,
+      ]);
+
+      return;
+    }
+
+    await this.performRecording();
+  }
+
+  async performRecording() {
     if (!this.isRecording()) {
       this.isRecording.set(true);
     }
@@ -145,9 +188,6 @@ export class RecordScreenComponent  implements OnInit {
     this.savePostHandler('draft');
 
     if (Capacitor.isNativePlatform()) {
-      const gmtDate = new TZDate(new Date(), this._timezone);
-      this._fileName = `learn_${format(gmtDate, 'yyyyMMdd_hhmmss')}.mp3`;
-
       this._file.createFile(this._file.dataDirectory, this._fileName, true).then((result) => {
         this._recorder = this._ngxMedia.create(this._file.dataDirectory.replace(/^file:\/\//, '') + this._fileName);
         this._recorder.startRecord();
@@ -176,7 +216,11 @@ export class RecordScreenComponent  implements OnInit {
 
   onTimerTick(event: any) {
     this._duration = event.tick_count;
-    console.log('timer tick', this._duration);
+    
+    // max. 50 minutes
+    if ((this._duration / 60) >= 50) {
+      this.savePostHandler('publish');
+    }
   }
 
   ionViewDidLeave() {
@@ -185,7 +229,6 @@ export class RecordScreenComponent  implements OnInit {
     if (Capacitor.isNativePlatform()) {
       this._recorder.stopRecord();
       this._recorder.release();
-      this.savePostHandler('draft');
     }
   }
 

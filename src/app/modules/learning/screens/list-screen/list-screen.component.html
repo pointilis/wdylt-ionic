@@ -24,7 +24,7 @@
       <ion-grid>
         <ion-row>
           <ion-col size="6">
-            <ion-button [ngStyle]="{'--padding-top': '20px', '--padding-bottom': '20px'}" expand="block" shape="round" strong="true" color="secondary" [routerLink]="['/record']">
+            <ion-button [ngStyle]="{'--padding-top': '20px', '--padding-bottom': '20px'}" expand="block" shape="round" strong="true" color="secondary" (click)="addNote()">
               <ion-icon slot="start" name="mic-outline"></ion-icon>
               <ion-text>Record</ion-text>
             </ion-button>
