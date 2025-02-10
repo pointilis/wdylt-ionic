@@ -35,6 +35,20 @@
             <ion-text>Pause</ion-text>
           }
           </ion-button>
+
+          <ion-button 
+            (click)="stopRecording()" 
+            size="large" 
+            expand="block"
+            shape="round" 
+            color="success" 
+            class="ion-margin-top"
+            [ngStyle]="{'--padding-start': '30px', '--padding-end': '30px'}"
+            [disabled]="!isRecording()"
+          >
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            <ion-text>Finish</ion-text>
+          </ion-button>
         } @else {
           <ion-button 
             (click)="startRecording()" 
@@ -48,20 +62,6 @@
             <ion-text>Start</ion-text>
           </ion-button>
         }
-
-        <ion-button 
-          (click)="stopRecording()" 
-          size="large" 
-          expand="block"
-          shape="round" 
-          color="success" 
-          class="ion-margin-top"
-          [ngStyle]="{'--padding-start': '30px', '--padding-end': '30px'}"
-          [disabled]="!isRecording()"
-        >
-          <ion-icon name="checkmark-outline" slot="start"></ion-icon>
-          <ion-text>Finish</ion-text>
-        </ion-button>
       </div>
     </div>
   </div>

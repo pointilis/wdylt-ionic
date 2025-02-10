@@ -38,6 +38,8 @@ export class ListScreenComponent  implements OnInit {
    */
   async addNote() {
     const alrt = await this.alertCtrl.create({
+      header: 'Confirmation',
+      subHeader: 'Make sure you are in the right place before starting to record.',
       inputs: [
         {
           type: 'textarea',
@@ -48,7 +50,11 @@ export class ListScreenComponent  implements OnInit {
       ],
       buttons: [
         {
-          text: 'Next',
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Start',
           role: 'confirm',
           handler: (data) => {
             this.router.navigate(['/record'], { queryParams: { postContent: data.post_content }});

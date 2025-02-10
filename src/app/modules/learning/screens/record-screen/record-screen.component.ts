@@ -91,6 +91,10 @@ export class RecordScreenComponent  implements OnInit {
     this._fileName = `learn_${format(gmtDate, 'yyyyMMdd_hhmmss')}.mp3`;
   }
 
+  ionViewDidEnter() {
+    this.startRecording();
+  }
+
   /**
    * Request permissions
    */
