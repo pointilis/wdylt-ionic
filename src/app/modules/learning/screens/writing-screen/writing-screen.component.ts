@@ -97,8 +97,8 @@ export class WritingScreenComponent  implements OnInit {
   }
 
   setEditorHeight(insetBottom: number) {
-    let ckeElement = document.getElementsByClassName('ck ck-editor')?.[0] as HTMLElement;
-    ckeElement.style.setProperty('height', `calc(100% - ${insetBottom}px)`);
+    // let ckeElement = document.getElementsByClassName('ck ck-editor')?.[0] as HTMLElement;
+    // ckeElement.style.setProperty('height', `calc(100% - ${insetBottom}px)`);
   }
 
   getInsetBottom() {
