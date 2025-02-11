@@ -44,11 +44,6 @@ export class WritingScreenComponent  implements OnInit {
 
   @ViewChild(IonHeader, { read: ElementRef }) ionHeader: ElementRef | null = null;
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    this.setEditorHeight();
-  }
-
   public headerElementHeight: number = 0;
   public postContent: string | undefined = undefined;
   private _postData: WritableSignal<Post> = signal({
@@ -70,7 +65,6 @@ export class WritingScreenComponent  implements OnInit {
   private _dateFormater: string = 'yyyy-MM-dd hh:mm:ss';
   public pid: string | null = this._route.snapshot.paramMap.get('pid');
   public currentPost!: any;
-  public insetBottom: number = 0;
 
   constructor(
     private _store: Store<PostState>,
@@ -88,33 +82,39 @@ export class WritingScreenComponent  implements OnInit {
     });
   }
 
-  setEditorHeight() {
-    const innerHeight = `${window.innerHeight}px`;
-    let ckeElement = document.getElementsByClassName('ck ck-editor')?.[0] as HTMLElement;
-
-    ckeElement.style.setProperty('height', `calc(${innerHeight} - ${this.headerElementHeight}px - ${this.insetBottom}px)`);
-  }
-
   ngOnInit() { }
 
   ionViewDidEnter() {
+    this.headerElementHeight = this.ionHeader?.nativeElement.offsetHeight;
+
+    if (this.pid) {
+      this._store.dispatch(PostActions.getPost({ pid: this.pid as string }));
+    }
+
+    // set editor height
+    const insetBottom = this.getInsetBottom();
+    this.setEditorHeight(insetBottom);
+  }
+
+  setEditorHeight(insetBottom: number) {
+    let ckeElement = document.getElementsByClassName('ck ck-editor')?.[0] as HTMLElement;
+    ckeElement.style.setProperty('height', `calc(100% - ${insetBottom}px)`);
+  }
+
+  getInsetBottom() {
+    let value: number = 0;
     const styles = document.documentElement.getAttribute('style')?.split(';');
     if (styles && styles?.length > 0) {
       const styleInsetBottom = styles.find(el => el.includes('--safe-area-inset-bottom'));
       if (styleInsetBottom) {
         const insetBottomValue = styleInsetBottom?.split(',')?.[1]?.match(/\d+/g)?.join();
         if (insetBottomValue) {
-          this.insetBottom = parseInt(insetBottomValue) + 20;
+          value = parseInt(insetBottomValue);
         }
       }
     }
 
-    this.headerElementHeight = this.ionHeader?.nativeElement.offsetHeight;
-    this.setEditorHeight();
-    
-    if (this.pid) {
-      this._store.dispatch(PostActions.getPost({ pid: this.pid as string }));
-    }
+    return value;
   }
 
   /**

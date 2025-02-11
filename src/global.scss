@@ -55,8 +55,12 @@
 
 ion-header {
   ion-toolbar:first-of-type {
-    padding-top: var(--safe-area-inset-top, 0) !important;
+    padding-top: 0 !important;
   }
+}
+
+ion-app {
+  margin-top: var(--safe-area-inset-top);
 }
 
 ion-label {
