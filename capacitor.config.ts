@@ -1,5 +1,10 @@
 /// <reference types="@capacitor-firebase/authentication" />
+/// <reference types="@capacitor-community/safe-area" />
+/// <reference types="@capacitor/keyboard" />
+
 import type { CapacitorConfig } from '@capacitor/cli';
+import '@capacitor-community/safe-area';
+import { KeyboardResize, KeyboardStyle } from '@capacitor/keyboard';
 
 const config: CapacitorConfig = {
   appId: 'com.wdylt.app',
@@ -8,6 +13,20 @@ const config: CapacitorConfig = {
   plugins: {
     CapacitorHttp: {
       enabled: true,
+    },
+    Keyboard: {
+      resize: KeyboardResize.Body,
+      style: KeyboardStyle.Dark,
+      resizeOnFullScreen: true,
+    },
+    SafeArea: {
+      enabled: true,
+      customColorsForSystemBars: true,
+      statusBarColor: '#000000',
+      statusBarContent: 'light',
+      navigationBarColor: '#000000',
+      navigationBarContent: 'light',
+      offset: 0,
     },
     CapacitorSQLite: {
       iosDatabaseLocation: 'Library/CapacitorDatabase',

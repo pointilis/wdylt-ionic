@@ -1,4 +1,4 @@
-<ion-header [translucent]="true" class="ion-no-border">
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
@@ -21,6 +21,6 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="false" [scrollY]="false">
+<ion-content [scrollY]="false">
   <app-writing-editor (content)="getContentHandler($event)" [headerHeight]="headerElementHeight"></app-writing-editor>
 </ion-content>

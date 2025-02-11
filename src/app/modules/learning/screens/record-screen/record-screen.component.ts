@@ -15,6 +15,7 @@ import { File } from '@awesome-cordova-plugins/file/ngx';
 import { Capacitor } from '@capacitor/core';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 import { ActivatedRoute } from '@angular/router';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 @Component({
   selector: 'app-record-screen',
@@ -97,25 +98,10 @@ export class RecordScreenComponent  implements OnInit {
     this.startRecording();
   }
 
-  /**
-   * Request permissions
-   */
-  async obtainPermissions() {
-    const audio = await this._androidPermissions.requestPermission(this._androidPermissions.PERMISSION.RECORD_AUDIO);
-    const modifyAudio = await this._androidPermissions.requestPermission(this._androidPermissions.PERMISSION.MODIFY_AUDIO_SETTINGS);
-    const readExtStorage = await this._androidPermissions.requestPermission(this._androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE);
-    const writeExtStorage = await this._androidPermissions.requestPermission(this._androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE);
-
-    const pass = audio.hasPermission && modifyAudio.hasPermission && readExtStorage.hasPermission && writeExtStorage.hasPermission;
-    return new Promise((resolve, reject) => {
-      return resolve(pass);
-    });
-  }
-
   onFinish() {
+    this._action = 'finish';
     this._postStatus = 'publish';
     this.savePostHandler(this._postStatus);
-    this._action = 'finish';
   }
 
   /**
@@ -161,48 +147,52 @@ export class RecordScreenComponent  implements OnInit {
       this._store.dispatch(PostActions.addPost({ payload: this._postData() }));
     }
   }
+  
+  /**
+   * Request permissions
+   */
+  async obtainPermissions() {
+    // file
+    const filePerm = await Filesystem.requestPermissions();
+    const filePermGranted = filePerm.publicStorage == 'granted';
+    // audio
+    const audoPerm = await this._androidPermissions.requestPermission(this._androidPermissions.PERMISSION.RECORD_AUDIO);
 
+    return filePermGranted && (audoPerm && audoPerm.hasPermission);
+  }
+  
   async startRecording() {
     const pass = await this.obtainPermissions();
-
-    console.log('permissions pas', pass);
-
-    if (pass == false) {
-      this._androidPermissions.requestPermissions([
-        this._androidPermissions.PERMISSION.RECORD_AUDIO,
-        this._androidPermissions.PERMISSION.MODIFY_AUDIO_SETTINGS,
-        this._androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE,
-        this._androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE,
-      ]);
-
-      return;
+    if (pass) {
+      await this.performRecording();
     }
-
-    await this.performRecording();
   }
 
   async performRecording() {
-    if (!this.isRecording()) {
-      this.isRecording.set(true);
-    }
-
-    // start timer
-    this.cdTimer.start();
-
-    // initialize post
-    this.savePostHandler('draft');
-
     if (Capacitor.isNativePlatform()) {
       this._file.createFile(this._file.dataDirectory, this._fileName, true).then((result) => {
         this._recorder = this._ngxMedia.create(this._file.dataDirectory.replace(/^file:\/\//, '') + this._fileName);
-        this._recorder.startRecord();
 
-        this._amplitudeTimer = setInterval(() => {
-          // get media amplitude
-          this._recorder.getCurrentAmplitude().then(value => {
-            this.amplitude.set(value);
-          });
-        }, 10);
+        if (this._recorder) {
+          if (!this.isRecording()) {
+            this.isRecording.set(true);
+          }
+          
+          // start timer
+          this.cdTimer.start();
+
+          // initialize post
+          this.savePostHandler('draft');
+
+          this._amplitudeTimer = setInterval(() => {
+            // get media amplitude
+            this._recorder.getCurrentAmplitude().then(value => {
+              this.amplitude.set(value);
+            });
+          }, 10);
+        }
+
+        this._recorder.startRecord();
       });
     }
   }
@@ -231,7 +221,7 @@ export class RecordScreenComponent  implements OnInit {
   ionViewDidLeave() {
     console.log('ionViewDidLeave');
 
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && this._recorder) {
       this._recorder.stopRecord();
       this._recorder.release();
     }
@@ -244,14 +234,14 @@ export class RecordScreenComponent  implements OnInit {
     if (this._action != 'finish') {
       const alrt = await this._alertCtrl.create({
         backdropDismiss: false,
-        message: 'Do you want to remove this recording?',
+        message: 'Do you want to discard this recording?',
         buttons: [
           {
             text: 'Continue Recording',
             role: 'cancel',
           },
           {
-            text: 'Yes Remove!',
+            text: 'Yes Discard!',
             role: 'confirm',
           }
         ]

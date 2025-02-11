@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { SafeArea } from '@capacitor-community/safe-area';
 import { Platform } from '@ionic/angular';
-import '@capacitor-community/safe-area';
+import { SafeArea } from '@capacitor-community/safe-area';
 
 @Component({
   selector: 'app-root',
@@ -14,13 +13,13 @@ export class AppComponent {
   constructor(
     private _platform: Platform,
   ) {
-    this._platform.ready().then(() => {
-      SafeArea.disable({
+    this._platform.ready().then(async () => {
+      SafeArea.enable({
         config: {
-          customColorsForSystemBars: false,
-          statusBarColor: '#000000', // transparent
+          customColorsForSystemBars: true,
+          statusBarColor: '#000000',
           statusBarContent: 'light',
-          navigationBarColor: '#000000', // transparent
+          navigationBarColor: '#000000',
           navigationBarContent: 'light',
         },
       });

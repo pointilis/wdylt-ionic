@@ -43,7 +43,7 @@ export class ListScreenComponent  implements OnInit {
       inputs: [
         {
           type: 'textarea',
-          placeholder: 'Add note, not required',
+          placeholder: 'Add note (optional)',
           name: 'post_content',
           cssClass: '!mt-0',
         }

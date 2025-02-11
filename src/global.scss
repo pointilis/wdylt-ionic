@@ -53,8 +53,10 @@
   }
 }
 
-body {
-  padding-top: var(--safe-area-inset-top);
+ion-header {
+  ion-toolbar:first-of-type {
+    padding-top: var(--safe-area-inset-top, 0) !important;
+  }
 }
 
 ion-label {

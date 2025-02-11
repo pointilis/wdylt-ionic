@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
 import { WritingEditorComponent } from '../../partials/writing-editor/writing-editor.component';
 import { 
   IonHeader, 
@@ -21,6 +21,7 @@ import { UTCDate } from "@date-fns/utc";
 import * as _ from 'lodash';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Platform } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-writing-screen',
@@ -42,7 +43,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class WritingScreenComponent  implements OnInit {
 
   @ViewChild(IonHeader, { read: ElementRef }) ionHeader: ElementRef | null = null;
-  
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.setEditorHeight();
+  }
+
   public headerElementHeight: number = 0;
   public postContent: string | undefined = undefined;
   private _postData: WritableSignal<Post> = signal({
@@ -64,11 +70,13 @@ export class WritingScreenComponent  implements OnInit {
   private _dateFormater: string = 'yyyy-MM-dd hh:mm:ss';
   public pid: string | null = this._route.snapshot.paramMap.get('pid');
   public currentPost!: any;
+  public insetBottom: number = 0;
 
   constructor(
     private _store: Store<PostState>,
     private _route: ActivatedRoute,
     private _actionsSubject$: ActionsSubject,
+    private _platform: Platform,
   ) { 
     this._actionsSubject$.pipe(takeUntilDestroyed()).subscribe((action: any) => {
       switch (action.type) {
@@ -80,13 +88,30 @@ export class WritingScreenComponent  implements OnInit {
     });
   }
 
-  ngOnInit() {
-    
+  setEditorHeight() {
+    const innerHeight = `${window.innerHeight}px`;
+    let ckeElement = document.getElementsByClassName('ck ck-editor')?.[0] as HTMLElement;
+
+    ckeElement.style.setProperty('height', `calc(${innerHeight} - ${this.headerElementHeight}px - ${this.insetBottom}px)`);
   }
 
-  ionViewDidEnter() {
-    this.headerElementHeight = this.ionHeader?.nativeElement.offsetHeight;
+  ngOnInit() { }
 
+  ionViewDidEnter() {
+    const styles = document.documentElement.getAttribute('style')?.split(';');
+    if (styles && styles?.length > 0) {
+      const styleInsetBottom = styles.find(el => el.includes('--safe-area-inset-bottom'));
+      if (styleInsetBottom) {
+        const insetBottomValue = styleInsetBottom?.split(',')?.[1]?.match(/\d+/g)?.join();
+        if (insetBottomValue) {
+          this.insetBottom = parseInt(insetBottomValue) + 20;
+        }
+      }
+    }
+
+    this.headerElementHeight = this.ionHeader?.nativeElement.offsetHeight;
+    this.setEditorHeight();
+    
     if (this.pid) {
       this._store.dispatch(PostActions.getPost({ pid: this.pid as string }));
     }
